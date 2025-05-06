@@ -20,6 +20,8 @@ namespace QueryResponseDemo
                 Logger.Info($"Connecting to {host}:{port}");
                 connection = new c(host, port, usernamePassword);
 
+                connection.ksAsync("2+3");
+
                 object result = connection.k("2+3");
                 Logger.Info($"Result of 2+3:{result}");
 
@@ -86,6 +88,7 @@ namespace QueryResponseDemo
                 if(connection != null)
                 {
                     connection.Close();
+                    connection.Dispose();
                 }
             }
         }

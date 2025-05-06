@@ -63,13 +63,13 @@ namespace FeedDemo
       for (int i = 0; i < 10; i++)
       {
         // Assumes a remote schema of mytable:([]time:`timespan$();sym:`symbol$();price:`float$();size:`long$())
-        object[] row = new object[]
-        {
+        object[] row =
+        [
                     new c.KTimespan(100),
-                    "SYMBOL",
+                    "SYMBOL1",
                     93.5,
                     300L
-        };
+        ];
 
         connection.ks(QFunc, TableName, row);
       }
@@ -124,9 +124,9 @@ namespace FeedDemo
       Logger.Info("Bulk populating '{0}' table on kdb server without using column names", TableName);
 
       connection.ks(QFunc, TableName, new object[] { times, symbols, prices, sizes });
-      
+
       Logger.Info("Successfully bull inserted {1} rows to {0} without using column names, {2} ms", TableName, 1000, (DateTime.Now - dt).TotalMilliseconds);
-      
+
       dt = DateTime.Now;
 
       Logger.Info("Bulk populating '{0}' table on kdb server using column names", TableName);

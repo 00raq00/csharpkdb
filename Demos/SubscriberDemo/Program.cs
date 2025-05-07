@@ -1,79 +1,63 @@
 ﻿using System;
-using System.Collections;
 using System.Threading.Tasks;
 using kx;
 using NLog;
 
 namespace SubscriberDemo
 {
-  static class Program
-  {
-    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-
-    static void Main()
+    static class Program
     {
-      string host = "localhost";
-      int port = 5001;
-      string usernamePassword = $"{Environment.UserName}:mypassword";
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-      c connection = null;
-      try
-      {
-        connection = new c(host, port, usernamePassword);
-        connection.k("upd:{[t;x].[t;();,;show x]};");
-        //open subscription
-        connection.ks(".u.sub", "mytable", "SYMBOL");
+        static void Main()
+        {
+            string host = "localhost";
+            int port = 5001;
+            string usernamePassword = $"{Environment.UserName}:mypassword";
 
-        bool subscribing = true;
+            c connection = null;
+            try
+            {
+                connection = new c(host, port, usernamePassword);
 
-        //start processing subscriptions until user exit or error
-        Task.Factory.StartNew(() =>
+                //open subscription
+                connection.ks(".u.sub", "mytable", "MSFT");
+
+                bool subscribing = true;
+
+                //start processing subscriptions until user exit or error
+                Task.Factory.StartNew(() =>
                 {
-                  Logger.Info("Processing subscription results. Press any key to exit");
-                  while (subscribing)
-                  {
-                    try
+                    Logger.Info("Processing subscription results. Press any key to exit");
+                    while (subscribing)
                     {
-                      dynamic result = connection.k();
-
-                      Logger.Info($"Received subscription result:{result}");
-                      if (result == null || result.Length < 2)
-                        continue;
-
-                      kx.c.Flip flip = result[2];
-                      string columnValue = "";
-                      for (int i = 0; i < flip.x.Length; i++)
-                      {
-                        IEnumerator enumerator = ((IEnumerable)flip.y[i]).GetEnumerator();
-                        enumerator.MoveNext();
-                        columnValue += $"{flip.x[i]}:{enumerator.Current} ";
-                      }
-
-                      Logger.Info($"Received subscription result:{result[0]} {result[1]} {columnValue}");
+                        try
+                        {
+                            Logger.Info($"Received subscription result:{connection.k()}");
+                        }
+                        catch (Exception)
+                        {
+                            Logger.Error("Error occurred processing Subscription. Exiting Subscription-Demo");
+                            subscribing = false;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                      Logger.Error($"Error occurred processing Subscription. Exiting Subscription-Demo {ex}");
-                      subscribing = false;
-                    }
-                  }
                 });
 
-        Console.ReadLine();
-        subscribing = false;
+                Console.ReadLine();
+                subscribing = false;
 
-      }
-      catch (Exception ex)
-      {
-        Logger.Error($"Error occurred running Subscription-Demo. \r\n{ex}");
-      }
-      finally
-      {
-        if (connection != null)
-        {
-          connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error occurred running Subscription-Demo. \r\n{ex}");
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
         }
-      }
     }
-  }
 }

@@ -52,8 +52,7 @@ class Program
         Console.WriteLine($"Error while fetching data : {ex.Message}");
       }
 
-      // await Task.Delay(10000); // 10 sekund
-      await Task.Delay(0); // 10 sekund
+      await Task.Delay(5); 
     }
   }
 }
